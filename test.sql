@@ -290,7 +290,7 @@ where p_ticker = 'AMZN';
 select u_username from users
 where u_acctbal >=
 (select 10*s_price from stocks
-where s_ticker='AMZN');
+where s_ticker='GOOGL');
 
 --Q8: get all orders for the month of july in 2014
 select * from orders
@@ -306,8 +306,8 @@ limit 1
 );
 
 --Q10: get the user who made the biggest purchase
-select u_username from
-(select u_username, max(o_quantity*o_tickerprice) from orders
+select u_username,purchase from
+(select u_username, max(o_quantity*o_tickerprice) purchase from orders
 join users on u_userid=o_userid);
 
 --Q11: get all the stocks that haven't been ordered
@@ -327,3 +327,27 @@ select distinct(u_username) from users
 join orders on o_userid=u_userid
 join stocks on s_ticker=o_ticker
 where o_tickerprice < s_price;
+
+--Q14: order the stocks that have been purchsed by their market cap
+select distinct(s_ticker),s_cap from stocks
+join orders on o_ticker=s_ticker
+order by s_cap desc;
+
+--Q15: get the avg return for googl
+select avg(((s_price-o_tickerprice)*o_quantity)/(o_quantity*o_tickerprice) * 100) as return from stocks
+join orders on o_ticker=s_ticker
+where s_ticker='GOOGL';
+
+
+--Q16: get the all the users and the stocks that have yielded the highest return
+select u_username,o_ticker, max(((s_price-o_tickerprice)*o_quantity)/(o_quantity*o_tickerprice) * 100) return from users
+join orders on o_userid=u_userid
+join stocks on s_ticker=o_ticker
+group by u_username
+order by return desc;
+
+--Q17: Let's say a stock grows proportionally to the avg return rate of orders on the stock.
+-- calculate how long it will take AMZN to reach $600/share
+--refer to script.py 
+
+--Q18: 
