@@ -375,3 +375,16 @@ select u_username,o_ticker,o_quantity,o_tickerprice,o_orderdate from users
 join orders on o_userid=u_userid
 where u_username = 'robert'
 order by o_orderdate;
+
+--Q19: get stocks that are on both of the watchlists of users misa and sql_expert
+SELECT w_ticker
+FROM stocks, users, watchlist
+WHERE u_userid = w_userid
+AND s_ticker = w_ticker
+AND u_username = 'misa'
+INTERSECT
+SELECT w_ticker 
+FROM stocks, users, watchlist
+WHERE u_userid = w_userid
+AND s_ticker = w_ticker
+AND u_username = 'sql_expert'
