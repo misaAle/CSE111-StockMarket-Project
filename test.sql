@@ -253,6 +253,26 @@ values
     (18,'STZ'),
     (18,'APPL'),
     (19,'AMZN');
+
+-- update a user's portfolio when they make an order on pre-existing stocks in their portfolio
+update portfolio (p_userid,p_ticker,p_quantity)
+set p_quantity = p_quantity + orders.o_quantity
+from (select o_quantity,o_userid from orders)
+where portfolio.p_userid=orders.o_userid and 
+portfolio.p_ticker=orders.o_ticker
+
+-- admin deletes users who terminate their account
+delete from users 
+where u_userid=4
+
+-- user deletes from their watchlist
+delete from watchlist
+where u_userid=5
+
+-- cancel transaction
+delete from orders 
+where u_userid=8
+
 --Q1: get all stocks
 select * from stocks;
 
