@@ -370,4 +370,8 @@ order by return desc;
 -- calculate how long it will take AMZN to reach $600/share
 --refer to script.py 
 
---Q18: 
+--Q18: get the history of orders from a user
+select u_username,o_ticker,o_quantity,o_tickerprice,o_orderdate from users 
+join orders on o_userid=u_userid
+where u_username = 'robert'
+order by o_orderdate;
