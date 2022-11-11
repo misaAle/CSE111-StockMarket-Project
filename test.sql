@@ -276,11 +276,7 @@ where u_userid=8
 --Q1: get all stocks
 select * from stocks;
 
---Q2: get all stocks with price greater than 50
-select * from stocks
-where s_price > 50;
-
---Q3: get all stocks beginning with the letter A
+--Q2: get all stocks beginning with the letter A
 select * from stocks
 where s_ticker like 'A%';
 
