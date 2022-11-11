@@ -387,4 +387,13 @@ SELECT w_ticker
 FROM stocks, users, watchlist
 WHERE u_userid = w_userid
 AND s_ticker = w_ticker
-AND u_username = 'sql_expert'
+AND u_username = 'sql_expert';
+
+--Q20: get the difference in average roi between stocks and crypto
+select crypto_return-stock_return from 
+(select avg(((s_price-o_tickerprice)*o_quantity)/(o_quantity*o_tickerprice) * 100) as stock_return 
+from stocks
+join orders on o_ticker=s_ticker),
+(select avg(((c_price-o_tickerprice)*o_quantity)/(o_quantity*o_tickerprice) * 100) as crypto_return 
+from crypto
+join orders on o_ticker=c_ticker);
