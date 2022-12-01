@@ -1,10 +1,18 @@
+import sqlite3
 from application import app
-from flask import render_template
+from flask import render_template, g, request
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html", home=True)
+    db = get_db()
+    db.row_factory = sqlite3.Row
+    cur = db.cursor()
+    cur.execute("select * from users")
+
+    rows = cur.fetchall()
+    
+    return render_template("home.html", rows=rows,home=True)
 
 @app.route("/stocks")
 def stocks():
@@ -17,3 +25,16 @@ def portfolio():
 @app.route("/watchlist")
 def watchlist():
     return render_template("home.html",watchlist=True)
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect('main.sqlite')
+    
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
