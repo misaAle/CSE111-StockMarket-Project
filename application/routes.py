@@ -1,6 +1,6 @@
 import sqlite3
 from application import app
-from flask import render_template, g, request
+from flask import render_template, g, request, url_for, redirect
 
 @app.route("/")
 @app.route("/home")
@@ -13,6 +13,15 @@ def home():
     rows = cur.fetchall()
     
     return render_template("home.html", rows=rows,home=True)
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+            #logic for admin interface
+            pass
+        
+    return render_template("login.html")
 
 @app.route("/stocks")
 def stocks():
