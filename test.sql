@@ -8,10 +8,10 @@ create table stocks(
 
 --users
 create table users(
-    u_userid decimal(8,0) not null,
-    u_username varchar(10) not null,
-    u_password varchar(12) not null,
-    u_acctbal decimal(10,2) not null
+    u_userid integer primary key autoincrement,
+    u_username text not null,
+    u_password text not null,
+    u_acctbal decimal(10,2) default 0.00
 );
 
 --portfolio
@@ -49,27 +49,27 @@ create table crypto(
 .import sample_stocks.csv stocks;
 
 --insert random users
-insert into users (u_userid,u_username,u_password,u_acctbal) 
+insert into users (u_username,u_password,u_acctbal) 
 values
-    (1,'misa','another',23000),
-    (2,'robert','password',45000),
-    (3,'kevin','1234',300),
-    (4,'sql_expert','fRe5H!',50000),
-    (5,'investor','NuMb3r5',32450),
-    (6,'investor2','wesrd',34213),
-    (7,'investor3','cwrbetrb',54323),
-    (8,'investor4','cw34r',675343),
-    (9,'investor5','byh57654',231),
-    (10,'investor6','dft5y67',8324),
-    (11,'investor7','qwergfd',2341),
-    (12,'investor8','1234dfs',93245),
-    (13,'sql_expert2','7y7dwd',12),
-    (14,'modesto_student','bruh12!',342),
-    (15,'turtlee','sl0w34',5634),
-    (16,'shrek','3rffdww2',9999),
-    (17,'merced_student','rufus',6000),
-    (18,'horsee','mustangs',2),
-    (19,'mac_adam','12edss',534);
+    ('misa','another',23000),
+    ('robert','password',45000),
+    ('kevin','1234',300),
+    ('sql_expert','fRe5H!',50000),
+    ('investor','NuMb3r5',32450),
+    ('investor2','wesrd',34213),
+    ('investor3','cwrbetrb',54323),
+    ('investor4','cw34r',675343),
+    ('investor5','byh57654',231),
+    ('investor6','dft5y67',8324),
+    ('investor7','qwergfd',2341),
+    ('investor8','1234dfs',93245),
+    ('sql_expert2','7y7dwd',12),
+    ('modesto_student','bruh12!',342),
+    ('turtlee','sl0w34',5634),
+    ('shrek','3rffdww2',9999),
+    ('merced_student','rufus',6000),
+    ('horsee','mustangs',2),
+    ('mac_adam','12edss',534);
 
 insert into portfolio (p_userid, p_ticker, p_quantity)
 values 

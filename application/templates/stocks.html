@@ -25,18 +25,18 @@
 
     <table>
         <thead>
-            <td>User ID</td>
-            <td>User Name</td>
-            <td>Password</td>
-            <td>Account Balance</td>
+            <td>Ticker</td>
+            <td>Price</td>
+            <td>Volume</td>
+            <td>Market Cap</td>
         </thead>
 
-        {% for row in rows %}
+        {% for row in stock_rows %}
             <tr>
-                <td>{{row["u_userid"]}}</td>
-                <td>{{row["u_username"]}}</td>
-                <td>{{row["u_password"]}}</td>
-                <td>{{row["u_acctbal"]}}</td>
+                <td>{{row["s_ticker"]}}</td>
+                <td>{{row["s_price"]}}</td>
+                <td>{{row["s_volume"]}}</td>
+                <td>{{row["s_cap"]}}</td>
             </tr>
         {% endfor %}
     </table>
