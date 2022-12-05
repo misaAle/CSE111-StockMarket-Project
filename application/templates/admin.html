@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UTA - Home Page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/css/main.css"/>
+</head>
+<body>
+
+<!-- <div class="container-fluid text-center top-container">
+    <img src="static/images/uta-logo-200.png">
+</div> -->
+    <div class="container">
+        
+        {% include "includes/nav.html" %}
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>Stock Portfolio Project</h1>
+    
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <td>User ID</td>
+            <td>User Name</td>
+            <td>Password</td>
+            <td>Account Balance</td>
+        </thead>
+
+        {% for row in rows %}
+            <tr>
+                <td>{{row["u_userid"]}}</td>
+                <td>{{row["u_username"]}}</td>
+                <td>{{row["u_password"]}}</td>
+                <td>{{row["u_acctbal"]}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+
+</body>
+</html>

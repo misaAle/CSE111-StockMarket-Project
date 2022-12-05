@@ -1,6 +1,6 @@
 import sqlite3
 from application import app
-from flask import render_template, g, request, url_for, redirect
+from flask import render_template, g, request, url_for, redirect, session
 
 
 @app.route("/")
@@ -18,11 +18,27 @@ def home():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] == 'admin' and request.form['password'] == 'admin':
+        _conn = get_db()
+        username = request.form["username"]
+        password = request.form["password"]
+        
+        if username == 'admin' and password == 'admin':
             #logic for admin interface
             pass
-        
+        else:
+            if checkUser(username,password):
+                sql = "SELECT * from users WHERE u_username = ? and u_password = ?"
+                params = [username, password]
+                res = executeQuery(sql, params)
+                
+                return redirect("/home")
+            
     return render_template("login.html")
+
+@app.route('/register')
+def register():
+
+    return render_template('register.html')
 
 @app.route("/stocks")
 def stocks():
@@ -49,24 +65,31 @@ def get_db():
     return db
 
 def executeQuery(query, params):
-	connection = get_db()
-	cursor = connection.cursor()
-	results = cursor.execute(query, [params]).fetchall()
-	connection.commit()
-	connection.close()
+	conn = get_db()
+	cursor = conn.cursor()
+	results = cursor.execute(query, params).fetchall()
+	conn.commit()
+	conn.close()
 	return results
 
 def availableUsername(username):
+    # check if username available when registering
     res = executeQuery("select count() from users where u_username = ?", [username])
     return res[0][0] == 0
 
 def insertUser(username, password):
-    _conn = get_db()
-    cur = _conn.cursor()
+    # function to insert user when registering
+    conn = get_db()
+    cur = conn.cursor()
     cur.execute("INSERT INTO users (u_username, u_password) VALUES (?,?)", [username,password])
-    _conn.commit()
-    _conn.close()
+    conn.commit()
+    conn.close()
 
+def checkUser(username, password):
+    # validate if user in database
+    # username and password must match
+    res = executeQuery("SELECT count() from users where u_username = ? AND u_password = ?", [username, password])
+    return res[0][0] == 1
 
 @app.teardown_appcontext
 def close_connection(exception):

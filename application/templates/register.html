@@ -8,16 +8,18 @@
     <body>
         <div class="container">
             {% include "includes/nav.html" %}
-            <h1>Please login</h1>
+            <h1>Please Register</h1>
             <br>
             <form action="" method="post">
                 <input type="text" placeholder="Username" name="username"
                     values="{{ request.form.username }}">
                 <input type="password" placeholder="Password" name="password"
                     value="{{ request.form.password }}">
+                <input type="password" placeholder="Confirm Password" name="confirmPassword"
+                    value="{{ request.form.password }}">
                 <input class="btn btn-default" type="submit" value="Login">
             </form>
-            <a href="{{ url_for('register') }}">Not registered? Click here to register.</a>
+            <a href="{{ url_for('login') }}">Already registered? Click here to login.</a>
         </div>
     </body>
 </html>
