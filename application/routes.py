@@ -1,6 +1,6 @@
 import sqlite3
 from application import app
-from flask import render_template, g, request, url_for, redirect, session
+from flask import render_template, g, request, url_for, redirect, session, flash
 from application.forms import LoginForm, RegisterForm
 from application import db
 
@@ -36,18 +36,19 @@ def login():
         sql = "SELECT 1, * FROM users WHERE u_username = ?"
         res = executeQuery(sql, [username])
         print('######',res)
-        if res[0][0] == 1:
+        if len(res) != 0 and res[0][0] == 1:
             password_sql = "SELECT u_password FROM users where u_username = ?"
             password_res = executeQuery(password_sql, [res[0][2]])
             print('*****',password_res)
             if password == password_res[0][0]:
+                flash(f"{res[0][2]}, you are successfully logged in!", "success")
                 session['user_id'] = res[0][1]
                 session['username'] = res[0][2]
                 return redirect("/home")
             else:
-                pass
+                flash("Sorry, the password entered didn't match any records.", "danger")
         else:
-            pass
+            flash("Sorry, either the username or password didn't match any records.", "danger")
     
     # if request.method == 'POST':
     #     _conn = get_db()
@@ -84,7 +85,7 @@ def stocks():
 
 @app.route("/portfolio")
 def portfolio():
-    return render_template("home.html",portfolio=True)
+    return render_template("portfolio.html",portfolio=True)
 
 @app.route("/watchlist")
 def watchlist():

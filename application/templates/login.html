@@ -1,48 +1,42 @@
-<html>
-    <head>
-        <title>Home Page</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-              integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-        <link rel="stylesheet" href="../static/css/main.css"/>
-    </head>
-    <body>
-        <div class="container">
-            {% include "includes/nav.html" %}
-            <form name="login" action="" method="post" novalidate>
-                <fieldset class="form-group">
-                    <legend>Please Login</legend> 
-                    {{ form.hidden_tag() }}
+{% extends "layout.html" %}
 
-                    <p>
-                        {{ form.username.label }}<br>
-                        {{ form.username() }}
-                        {% for error in form.username.errors %}
-                            <span class="error-message">{{ error }}</span>
-                        {% endfor %}
-                    </p>
-                    <p>
-                        {{ form.password.label }}<br>
-                        {{ form.password() }}
-                        {% for error in form.password.errors %}
-                            <span class="error-message">{{ error }}</span>
-                        {% endfor %}
-                    </p>
+{% block content %}
+<div class="container">
+    <!-- {% include "includes/nav.html" %} -->
+    <form name="login" action="" method="post" novalidate>
+        <fieldset class="form-group">
+            <legend>Please Login</legend> 
+            {{ form.hidden_tag() }}
 
-                    <p>
-                        {{ form.submit() }}
-                    </p>
-                </fieldset>
-            </form>
-            <!-- <h1>Please login</h1>
-            <br>
-            <form action="" method="post">
-                <input type="text" placeholder="Username" name="username"
-                    values="{{ request.form.username }}">
-                <input type="password" placeholder="Password" name="password"
-                    value="{{ request.form.password }}">
-                <input class="btn btn-default" type="submit" value="Login">
-            </form> -->
-            <a href="{{ url_for('register') }}">Not registered? Click here to register.</a>
-        </div>
-    </body>
-</html>
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username() }}
+                {% for error in form.username.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password() }}
+                {% for error in form.password.errors %}
+                    <span class="error-message">{{ error }}</span>
+                {% endfor %}
+            </p>
+
+            <p>
+                {{ form.submit() }}
+            </p>
+        </fieldset>
+    </form>
+    <!-- <h1>Please login</h1>
+    <br>
+    <form action="" method="post">
+        <input type="text" placeholder="Username" name="username"
+            values="{{ request.form.username }}">
+        <input type="password" placeholder="Password" name="password"
+            value="{{ request.form.password }}">
+        <input class="btn btn-default" type="submit" value="Login">
+    </form> -->
+    <a href="{{ url_for('register') }}">Not registered? Click here to register.</a>
+</div>
+{% endblock %}
