@@ -393,3 +393,8 @@ join orders on o_ticker=s_ticker),
 (select avg(((c_price-o_tickerprice)*o_quantity)/(o_quantity*o_tickerprice) * 100) as crypto_return 
 from crypto
 join orders on o_ticker=c_ticker);
+
+-- Get all the tickers from the portfolio of an individual
+SELECT p_ticker, p_quantity FROM portfolio, users
+WHERE u_userid = p_userid
+AND u_username = 'misa';

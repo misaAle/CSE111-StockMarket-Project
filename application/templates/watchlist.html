@@ -7,30 +7,29 @@
     <div class="row">
         <div class="col-md-12 text-center">
             {% if session['username'] %}
-            <span class="user">{{ session['username'] }}'s Portfolio</span>
+            <span class="user">{{ session['username'] }}'s Watchlist</span>
             <table>
                 <thead>
                     <td>Ticker</td>
-                    <td>Quantity</td>
+                    <!-- <td>Quantity</td> -->
                     <!-- <td>Volume</td>
                     <td>Market Cap</td> -->
                 </thead>
         
-                {% for row in portfolio_rows %}
+                {% for row in watchlist_rows %}
                     <tr>
-                        <td>{{row["p_ticker"]}}</td>
-                        <td>{{row["p_quantity"]}}</td>
+                        <td>{{row["w_ticker"]}}</td>
+                        <!-- <td>{{row["p_quantity"]}}</td> -->
                         <!-- <td>{{row["s_volume"]}}</td>
                         <td>{{row["s_cap"]}}</td> -->
                     </tr>
                 {% endfor %}
             </table>
             {% else %}
-            <p>Login to access your portfolio.<a href="{{ url_for('login') }}"> Login</a></p>
+            <p>Login to access your watchlist.<a href="{{ url_for('login') }}"> Login</a></p>
             {% endif %}
         </div>
     </div>
 </div>
-
 
 {% endblock %}

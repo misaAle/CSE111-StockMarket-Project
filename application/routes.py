@@ -31,24 +31,33 @@ def login():
     if form.validate_on_submit():
         username = form.username.data
         password = form.password.data
-        conn = db
-        cur = conn.cursor()
-        sql = "SELECT 1, * FROM users WHERE u_username = ?"
-        res = executeQuery(sql, [username])
-        print('######',res)
-        if len(res) != 0 and res[0][0] == 1:
-            password_sql = "SELECT u_password FROM users where u_username = ?"
-            password_res = executeQuery(password_sql, [res[0][2]])
-            print('*****',password_res)
-            if password == password_res[0][0]:
-                flash(f"{res[0][2]}, you are successfully logged in!", "success")
-                session['user_id'] = res[0][1]
-                session['username'] = res[0][2]
-                return redirect("/home")
-            else:
-                flash("Sorry, the password entered didn't match any records.", "danger")
+        if checkUser(username, password):
+            flash(f"{username}, you are successfully logged in!", "success")
+            res = executeQuery("SELECT u_userid FROM users WHERE u_username = ?", [username])
+            session['user_id'] = res[0][0]
+            session['username'] = username
+            return redirect('/home')
         else:
             flash("Sorry, either the username or password didn't match any records.", "danger")
+            pass
+        # conn = db
+        # cur = conn.cursor()
+        # sql = "SELECT 1, * FROM users WHERE u_username = ?"
+        # res = executeQuery(sql, [username])
+        # print('######',res)
+        # if len(res) != 0 and res[0][0] == 1:
+        #     password_sql = "SELECT u_password FROM users where u_username = ?"
+        #     password_res = executeQuery(password_sql, [res[0][2]])
+        #     print('*****',password_res)
+        #     if password == password_res[0][0]:
+        #         flash(f"{res[0][2]}, you are successfully logged in!", "success")
+        #         session['user_id'] = res[0][1]
+        #         session['username'] = res[0][2]
+        #         return redirect("/home")
+        #     else:
+        #         flash("Sorry, the password entered didn't match any records.", "danger")
+        # else:
+        #     flash("Sorry, either the username or password didn't match any records.", "danger")
     
     # if request.method == 'POST':
     #     _conn = get_db()
@@ -85,11 +94,30 @@ def stocks():
 
 @app.route("/portfolio")
 def portfolio():
+    
+    if session.get('username'):
+        conn = db
+        db.row_factory = sqlite3.Row
+        cur = db.cursor()
+        cur.execute("""SELECT p_ticker, p_quantity FROM portfolio, users
+WHERE u_userid = p_userid
+AND u_userid = ?;""", [session['user_id']])
+        portfolio_rows = cur.fetchall()
+        return render_template("portfolio.html", portfolio_rows=portfolio_rows, portfolio=True)
     return render_template("portfolio.html",portfolio=True)
 
 @app.route("/watchlist")
 def watchlist():
-    return render_template("home.html",watchlist=True)
+    if session.get('username'):
+        conn = db
+        db.row_factory = sqlite3.Row
+        cur = db.cursor()
+        cur.execute("""SELECT w_ticker FROM watchlist, users
+WHERE u_userid = w_userid
+AND u_userid = ?;""", [session['user_id']])
+        watchlist_rows = cur.fetchall()
+        return render_template("watchlist.html", watchlist_rows=watchlist_rows, watchlist=True)
+    return render_template("watchlist.html",watchlist=True)
 
 # def get_db():
 #     db = getattr(g, '_database', None)
