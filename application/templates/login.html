@@ -5,7 +5,7 @@
     <!-- {% include "includes/nav.html" %} -->
     <form name="login" action="" method="post" novalidate>
         <fieldset class="form-group">
-            <legend>Please Login</legend> 
+            <legend>Login</legend> 
             {{ form.hidden_tag() }}
 
             <p>
@@ -37,6 +37,6 @@
             value="{{ request.form.password }}">
         <input class="btn btn-default" type="submit" value="Login">
     </form> -->
-    <a href="{{ url_for('register') }}">Not registered? Click here to register.</a>
+    <p>Not registered?<a href="{{ url_for('register') }}"> Register here</a></p>
 </div>
 {% endblock %}

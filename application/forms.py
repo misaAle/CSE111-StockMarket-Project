@@ -22,6 +22,6 @@ class RegisterForm(FlaskForm):
 
     def validate_username(self,username):
         cur = db.cursor()
-        res = cur.execute("SELECT count() FROM users WHERE u_username = ?", [username]).fetchall()
+        res = cur.execute("SELECT count() FROM users WHERE u_username = ?", [username.data]).fetchall()
         if res[0][0] != 0:
             raise ValidationError("Username is already in use.")

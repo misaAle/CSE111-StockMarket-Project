@@ -77,10 +77,37 @@ def login():
             
     return render_template("login.html", form=form, login=True)
 
-@app.route('/register')
+@app.route('/register', methods=['POST','GET'])
 def register():
-
-    return render_template('register.html', register=True)
+    if session.get('username'):
+        return redirect('/home')
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        print("@@@@@@@",username, password)
+        confirm_password = form.confirm_password.data
+        if password == confirm_password:
+            flash(f"{username}, you are successfully registered!", "success")
+            sql ="""INSERT INTO users (u_username,u_password,u_acctbal) 
+                    VALUES
+                        (?,?,0);"""
+            params = [username, password]
+            res = executeQuery(sql, params)
+            return redirect('/login')
+        else:
+            flash("Passwords did not match", "danger")
+            
+        # if checkUser(username, password):
+        #     flash(f"{username}, you are successfully logged in!", "success")
+        #     res = executeQuery("SELECT u_userid FROM users WHERE u_username = ?", [username])
+        #     session['user_id'] = res[0][0]
+        #     session['username'] = username
+        #     return redirect('/home')
+        # else:
+        #     flash("Sorry, either the username or password didn't match any records.", "danger")
+            
+    return render_template('register.html', form=form,register=True)
 
 @app.route("/stocks")
 def stocks():
