@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1>All Orders</h1>
+            
+        </div>
+    </div>
+</div>
+<table>
+    <thead>
+        <td>Order ID</td>
+        <td>User ID</td>
+        <td>Ticker</td>
+        <td>Ticker Price</td>
+        <td>Quantity</td>
+        <td>Order Date</td>
+    </thead>
+
+    {% for row in transaction_rows %}
+        <tr>
+            <td>{{row["o_orderid"]}}</td>
+            <td>{{row["o_userid"]}}</td>
+            <td>{{row["o_ticker"]}}</td>
+            <td>{{row["o_tickerprice"]}}</td>
+            <td>{{row["o_quantity"]}}</td>
+            <td>{{row["o_orderdate"]}}</td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

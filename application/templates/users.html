@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h1>All Users</h1>
+    
+            </div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <td>User ID</td>
+            <td>Account Balance</td>
+        </thead>
+
+        {% for row in user_rows %}
+            <tr>
+                <td>{{row["u_username"]}}</td>
+                <td>{{row["u_acctbal"]}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+{% endblock %}

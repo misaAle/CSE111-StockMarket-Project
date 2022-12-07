@@ -5,19 +5,18 @@
     <!-- {% include "includes/nav.html" %} -->
     <form name="login" action="" method="post" novalidate>
         <fieldset class="form-group">
-            <legend>Please Login</legend> 
+            <legend>Login</legend> 
             {{ form.hidden_tag() }}
 
             <p>
-                {{ form.username.label }}<br>
-                {{ form.username() }}
+                <input type="text" placeholder="Username" values="{{form.username()}}
                 {% for error in form.username.errors %}
                     <span class="error-message">{{ error }}</span>
                 {% endfor %}
+                
             </p>
             <p>
-                {{ form.password.label }}<br>
-                {{ form.password() }}
+                <input type="password" placeholder="Password" values="{{ form.password() }}
                 {% for error in form.password.errors %}
                     <span class="error-message">{{ error }}</span>
                 {% endfor %}
@@ -37,6 +36,6 @@
             value="{{ request.form.password }}">
         <input class="btn btn-default" type="submit" value="Login">
     </form> -->
-    <a href="{{ url_for('register') }}">Not registered? Click here to register.</a>
+    <p>Not registered?<a href="{{ url_for('register') }}"> Register here</a></p>
 </div>
 {% endblock %}

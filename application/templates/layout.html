@@ -9,10 +9,10 @@
 <body>
 
 <div class="container">
-    {% include "includes/nav.html" %}
-
-    {% if session['username'] %}
-    <span class="user">Welcome, {{ session['username'] }}</span>
+    {% if session['username'] == 'admin' %}
+        {% include "includes/admin_nav.html" %}
+    {% else %}
+        {% include "includes/nav.html" %}
     {% endif %}
 
     {% with messages = get_flashed_messages(with_categories=true) %}
