@@ -398,3 +398,8 @@ join orders on o_ticker=c_ticker);
 SELECT p_ticker, p_quantity FROM portfolio, users
 WHERE u_userid = p_userid
 AND u_username = 'misa';
+
+-- insert admin
+insert into users (u_username,u_password,u_acctbal) 
+values
+    ('admin','admin',0);

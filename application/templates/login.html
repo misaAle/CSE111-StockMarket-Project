@@ -9,15 +9,14 @@
             {{ form.hidden_tag() }}
 
             <p>
-                {{ form.username.label }}<br>
-                {{ form.username() }}
+                <input type="text" placeholder="Username" values="{{form.username()}}
                 {% for error in form.username.errors %}
                     <span class="error-message">{{ error }}</span>
                 {% endfor %}
+                
             </p>
             <p>
-                {{ form.password.label }}<br>
-                {{ form.password() }}
+                <input type="password" placeholder="Password" values="{{ form.password() }}
                 {% for error in form.password.errors %}
                     <span class="error-message">{{ error }}</span>
                 {% endfor %}

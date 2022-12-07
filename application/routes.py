@@ -32,6 +32,10 @@ def login():
         username = form.username.data
         password = form.password.data
         if checkUser(username, password):
+            if username == 'admin' and password == 'admin1234':
+                session['username'] = 'admin'
+                return redirect('/admin')
+            
             flash(f"{username}, you are successfully logged in!", "success")
             res = executeQuery("SELECT u_userid FROM users WHERE u_username = ?", [username])
             session['user_id'] = res[0][0]
@@ -145,6 +149,34 @@ AND u_userid = ?;""", [session['user_id']])
         watchlist_rows = cur.fetchall()
         return render_template("watchlist.html", watchlist_rows=watchlist_rows, watchlist=True)
     return render_template("watchlist.html",watchlist=True)
+
+@app.route('/admin')
+def admin():
+    if session.get('username') != 'admin':
+        return redirect('/home')
+    return render_template('admin.html', admin=True)
+
+@app.route('/transactions')
+def transactions():
+    if session.get('username') != 'admin':
+        return redirect('/home')
+    conn = db
+    db.row_factory = sqlite3.Row
+    cur = db.cursor()
+    cur.execute("SELECT * FROM orders;")
+    transaction_rows = cur.fetchall()
+    return render_template('transactions.html', transaction_rows=transaction_rows, transactions=True)
+
+@app.route('/users')
+def users():
+    if session.get('username') != 'admin':
+        return redirect('/home')
+    conn = db
+    db.row_factory = sqlite3.Row
+    cur = db.cursor()
+    cur.execute("SELECT * FROM users;")
+    user_rows = cur.fetchall()
+    return render_template('users.html', user_rows=user_rows, users=True)
 
 # def get_db():
 #     db = getattr(g, '_database', None)
