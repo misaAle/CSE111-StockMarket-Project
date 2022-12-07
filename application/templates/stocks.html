@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <table>
+    <table id="stockData" class="table table-stripped">
         <thead>
             <td>Ticker</td>
             <td>Price</td>
@@ -22,10 +22,17 @@
 
         {% for row in stock_rows %}
             <tr>
-                <td>{{row["s_ticker"]}}</td>
-                <td>{{row["s_price"]}}</td>
-                <td>{{row["s_volume"]}}</td>
-                <td>{{row["s_cap"]}}</td>
+                <form action="" method="post">
+                    <td><input type="hidden" name="ticker" value="{{ row["s_ticker"] }}"> {{ row["s_ticker"] }}</td>
+                    <td>{{row["s_price"]}}</td>
+                    <td>{{row["s_volume"]}}</td>
+                    <td>{{row["s_cap"]}}</td>
+                    {% if session['username'] %}
+                    <td>
+                        <input type="submit" name="watchlist-submission" value="Add to Watchlist">
+                    </td>
+                </form>
+                {% endif %}
             </tr>
         {% endfor %}
     </table>

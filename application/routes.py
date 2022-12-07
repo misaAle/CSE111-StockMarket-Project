@@ -113,8 +113,21 @@ def register():
             
     return render_template('register.html', form=form,register=True)
 
-@app.route("/stocks")
+@app.route("/stocks", methods=['POST', 'GET'])
 def stocks():
+    
+    if request.method == 'POST':
+        if request.form.get('watchlist-submission') == 'Add to Watchlist':
+            print('Submitted')
+            ticker = request.form.get("ticker")
+            print(ticker)
+            sql = """INSERT INTO watchlist
+                VALUES
+                    (?, ?)"""
+            params = [session['user_id'], ticker ]
+            res = executeQuery(sql, params)
+            return redirect('/watchlist')
+        
     conn = db
     db.row_factory = sqlite3.Row
     cur = db.cursor()
@@ -177,6 +190,20 @@ def users():
     cur.execute("SELECT * FROM users;")
     user_rows = cur.fetchall()
     return render_template('users.html', user_rows=user_rows, users=True)
+
+
+# @app.route('/button', methods=['GET', 'POST'])
+# def button():
+#     if request.method == 'POST':
+#         sql = """INSERT INTO users (u_username, u_password, u_acctbal)
+#             VALUES
+#                 ('another_test', ?, 0);"""
+#         var = 'asdfghjkl'
+#         res = executeQuery(sql, [var])
+#         flash("Successful", "success")
+#         return redirect('/button')
+#     flash("test", "danger")    
+#     return render_template('test.html')
 
 # def get_db():
 #     db = getattr(g, '_database', None)
