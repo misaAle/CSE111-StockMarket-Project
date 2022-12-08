@@ -46,9 +46,11 @@ create table crypto(
 );
 
 --populate stocks table
-.mode "csv";
-.separator ",";
-.import sample_stocks.csv stocks;
+drop table stocks;
+
+.mode "csv"
+.separator ","
+.import sample_stocks.csv stocks
 
 --insert random users
 insert into users (u_username,u_password,u_acctbal) 

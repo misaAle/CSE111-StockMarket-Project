@@ -1,4 +1,5 @@
 import sqlite3
+import random
 from application import app
 from flask import render_template, g, request, url_for, redirect, session, flash
 from application.forms import LoginForm, RegisterForm
@@ -127,6 +128,14 @@ def stocks():
             params = [session['user_id'], ticker ]
             res = executeQuery(sql, params)
             return redirect('/watchlist')
+        elif request.form.get('updateStocks') == 'Update Stocks':
+            print('Stocks Updated!')
+            randomUpdate = random.uniform(-5.0, 5.0)
+            print(randomUpdate)
+            sql = """UPDATE stocks
+            SET s_price = round(s_price*(1+?);"""
+            res = executeQuery(sql, [randomUpdate/100])
+            return redirect('/stocks')
         
     conn = db
     db.row_factory = sqlite3.Row
