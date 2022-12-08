@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<div class="stock-container">
+
+    <!-- <div class="row"> -->
+        <!-- <div class="col-md-12 text-center"> -->
+            <h1>All Available Crypto</h1>
+            {% if session['username'] == 'admin' %}
+            <form action="" method="post">
+                <input type="submit" name="updateStocks" value="Update Stocks">
+            </form>
+            {% endif %}
+        <!-- </div> -->
+    <!-- </div> -->
+</div>
+
+<table id="cryptoData" class="table table-stripped">
+    <thead>
+        <td>Ticker</td>
+        <td>Price</td>
+    </thead>
+
+    {% for row in crypto_rows %}
+        <tr>
+            <form action="" method="post">
+                <td><input type="hidden" name="crypto-ticker" value="{{ row["c_ticker"] }}"> {{ row["c_ticker"] }}</td>
+                <td>{{row["c_price"]}}</td>
+                {% if session['username'] and session['username'] != 'admin'%}
+                <td>
+                    <input type="submit" name="crypto-watchlist-submission" value="Add to Watchlist">
+                </td>
+                {% endif %}
+            </form>
+        </tr>
+    {% endfor %}
+</table>
+
+
+{% endblock %}

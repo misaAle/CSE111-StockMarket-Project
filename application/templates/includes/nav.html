@@ -3,6 +3,7 @@
         <ul class="nav nav-pills">
             <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link {% if home %}active{% endif %}">Home</a></li>
             <li class="nav-item"><a href="{{ url_for('stocks') }}" class="nav-link {% if stocks %}active{% endif %}">Stocks</a></li>
+            <li class="nav-item"><a href="{{ url_for('crypto') }}" class="nav-link {% if crypto %}active{% endif %}">Crypto</a></li>
             <li class="nav-item"><a href="{{ url_for('portfolio') }}" class="nav-link {% if portfolio %}active{% endif %}">Portfolio</a></li>
             <li class="nav-item"><a href="{{ url_for('watchlist') }}" class="nav-link {% if watchlist %}active{% endif %}">Watchlist</a></li>
             {% if not session['username'] %}

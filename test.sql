@@ -22,9 +22,11 @@ create table portfolio(
 );
 
 --watchlist
-create table watchlist(
-    w_userid decimal(8,0) not null,
-    w_ticker varchar(6) not null
+drop table watchlist;
+create table watchlist( 
+    w_userid INT not null,
+    w_ticker varchar(6) not null,
+    UNIQUE(w_userid, w_ticker) ON CONFLICT IGNORE
 );
 
 --orders
