@@ -136,6 +136,28 @@ def stocks():
 
     return render_template("stocks.html",stock_rows=stock_rows,stocks=True)
 
+@app.route('/crypto', methods=['POST', 'GET'])
+def crypto():
+
+    if request.method == 'POST':
+        if request.form.get('crypto-watchlist-submission') == 'Add to Watchlist':
+            print('Submitted')
+            ticker = request.form.get("crypto-ticker")
+            print(ticker)
+            sql = """INSERT INTO watchlist
+                VALUES
+                    (?, ?)"""
+            params = [session['user_id'], ticker ]
+            res = executeQuery(sql, params)
+            return redirect('/watchlist')
+    
+    conn = db
+    db.row_factory = sqlite3.Row
+    cur = db.cursor()
+    cur.execute("select * from crypto;")
+    crypto_rows = cur.fetchall()
+    return render_template('crypto.html', crypto_rows=crypto_rows, crypto=True)
+
 @app.route("/portfolio")
 def portfolio():
     
@@ -157,10 +179,20 @@ def watchlist():
         db.row_factory = sqlite3.Row
         cur = db.cursor()
         cur.execute("""SELECT w_ticker FROM watchlist, users
-WHERE u_userid = w_userid
-AND u_userid = ?;""", [session['user_id']])
-        watchlist_rows = cur.fetchall()
-        return render_template("watchlist.html", watchlist_rows=watchlist_rows, watchlist=True)
+        WHERE u_userid = w_userid
+        AND w_ticker not in
+        (SELECT c_ticker FROM crypto)
+        AND u_userid = ?;""", [session['user_id']])
+        watchlist_stock_rows = cur.fetchall()
+
+        cur.execute("""SELECT DISTINCT w_ticker FROM watchlist, users, crypto
+        WHERE u_userid = w_userid
+        AND w_ticker in
+        (SELECT c_ticker FROM crypto)
+        AND u_userid = ?;""", [session['user_id']])
+        watchlist_crypto_rows = cur.fetchall()
+
+        return render_template("watchlist.html", watchlist_stock_rows=watchlist_stock_rows, watchlist_crypto_rows=watchlist_crypto_rows,watchlist=True)
     return render_template("watchlist.html",watchlist=True)
 
 @app.route('/admin')

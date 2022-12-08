@@ -2,14 +2,18 @@
 
 {% block content %}
 
-    <div class="container">
+    <div class="stock-container">
 
-        <div class="row">
-            <div class="col-md-12 text-center">
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-12 text-center"> -->
                 <h1>All Available Stocks</h1>
-    
-            </div>
-        </div>
+                {% if session['username'] == 'admin' %}
+                <form action="" method="post">
+                    <input type="submit" name="updateStocks" value="Update Stocks">
+                </form>
+                {% endif %}
+            <!-- </div> -->
+        <!-- </div> -->
     </div>
 
     <table id="stockData" class="table table-stripped">
@@ -27,12 +31,12 @@
                     <td>{{row["s_price"]}}</td>
                     <td>{{row["s_volume"]}}</td>
                     <td>{{row["s_cap"]}}</td>
-                    {% if session['username'] %}
+                    {% if session['username'] and session['username'] != 'admin'%}
                     <td>
                         <input type="submit" name="watchlist-submission" value="Add to Watchlist">
                     </td>
+                    {% endif %}
                 </form>
-                {% endif %}
             </tr>
         {% endfor %}
     </table>
