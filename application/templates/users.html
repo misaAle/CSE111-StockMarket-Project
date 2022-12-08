@@ -12,16 +12,21 @@
         </div>
     </div>
 
-    <table>
+    <table class="table table-stripped">
         <thead>
-            <td>User ID</td>
+            <td>User Name</td>
             <td>Account Balance</td>
         </thead>
 
         {% for row in user_rows %}
             <tr>
-                <td>{{row["u_username"]}}</td>
-                <td>{{row["u_acctbal"]}}</td>
+                <form action="" method="post">
+                    <td><input type="hidden" name="user" value="{{ row["u_username"] }}"> {{ row["u_username"] }}</td>
+                    <td>{{row["u_acctbal"]}}</td>
+                    <td>
+                        <input type="submit" name="deleteUser" value="Remove User">
+                    </td>
+                </form>
             </tr>
         {% endfor %}
     </table>

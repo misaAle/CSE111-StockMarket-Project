@@ -2,35 +2,81 @@
 
 {% block content %}
 
-<div class="container">
+{% if session['username'] %}
+    <div class="stock-container">
 
-    <div class="row">
-        <div class="col-md-12 text-center">
-            {% if session['username'] %}
-            <span class="user">{{ session['username'] }}'s Portfolio</span>
-            <table class="table table-stripped">
-                <thead>
-                    <td>Ticker</td>
-                    <td>Quantity</td>
-                    <!-- <td>Volume</td>
-                    <td>Market Cap</td> -->
-                </thead>
-        
-                {% for row in portfolio_rows %}
-                    <tr>
-                        <td>{{row["p_ticker"]}}</td>
-                        <td>{{row["p_quantity"]}}</td>
-                        <!-- <td>{{row["s_volume"]}}</td>
-                        <td>{{row["s_cap"]}}</td> -->
-                    </tr>
-                {% endfor %}
-            </table>
-            {% else %}
-            <p>Login to access your portfolio.<a href="{{ url_for('login') }}"> Login</a></p>
-            {% endif %}
-        </div>
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-12 text-center"> -->
+                <h1>Stocks</h1>
+                
+                <!-- {% if session['username'] == 'admin' %}
+                <form action="" method="post">
+                    <input type="submit" name="updateStocks" value="Update Stocks">
+                </form>
+                {% endif %} -->
+            <!-- </div> -->
+        <!-- </div> -->
     </div>
-</div>
+    <table class="table table-stripped">
+        <thead>
+            <td>Ticker</td>
+            <td>Quantity</td>
+            <!-- <td>Volume</td>
+            <td>Market Cap</td> -->
+        </thead>
+    
+        {% for row in stock_portfolio_rows %}
+            <tr>
+                <form action="" method="post">
+                    <td><input type="hidden" name="portfolio-stock-ticker" value="{{ row["p_ticker"] }}"> {{ row["p_ticker"] }}</td>
+                    <td>{{row["p_quantity"]}}</td>
+                    <!-- <td>{{row["s_volume"]}}</td>
+                    <td>{{row["s_cap"]}}</td> -->
+                    <td>
+                        <input type="text" name="sell-stock-submission" placeholder="Sell Stock">
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+    </table>
 
+    <div class="stock-container">
+
+        <!-- <div class="row"> -->
+            <!-- <div class="col-md-12 text-center"> -->
+                <h1>Crypto</h1>
+                <!-- {% if session['username'] == 'admin' %}
+                <form action="" method="post">
+                    <input type="submit" name="updateStocks" value="Update Stocks">
+                </form>
+                {% endif %} -->
+            <!-- </div> -->
+        <!-- </div> -->
+    </div>
+    <table class="table table-stripped">
+        <thead>
+            <td>Ticker</td>
+            <td>Quantity</td>
+            <!-- <td>Volume</td>
+            <td>Market Cap</td> -->
+        </thead>
+    
+        {% for row in crypto_portfolio_rows %}
+            <tr>
+                <form action="" method="post">
+                    <td><input type="hidden" name="portfolio-crypto-ticker" value="{{ row["p_ticker"] }}"> {{ row["p_ticker"] }}</td>
+                    <td>{{row["p_quantity"]}}</td>
+                    <!-- <td>{{row["s_volume"]}}</td>
+                    <td>{{row["s_cap"]}}</td> -->
+                    <td>
+                        <input type="text" name="sell-crypto-submission" placeholder="Sell Crypto">
+                    </td>
+                </form>
+            </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Login to access your watchlist.<a href="{{ url_for('login') }}"> Login</a></p>
+{% endif %}
 
 {% endblock %}

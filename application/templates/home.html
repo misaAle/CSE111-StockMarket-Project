@@ -5,10 +5,23 @@
             <h1>QueryStocks</h1>
             
             {% if session['username'] %}
-            <h3>Welcome, {{ session['username'] }}</h3>
+
             <p>Nevigate to <a href="{{ url_for('stocks') }}">Stocks</a> to see all stocks in our database. You can add stocks to
             <a href="{{ url_for('watchlist') }}">Watchlist</a>, so you can easily keep track of stocks that interest you. 
             You can also 'buy' stocks and track your progress in <a href="{{ url_for('portfolio') }}">Portfolio</a>.</p>
+            <br>
+            <br>
+            <h3>Add funds to your account</h3>
+            <form action="" method="post">
+                <!-- <input type="submit" name="add20" value="Add $20 to your account">
+                <input type="submit" name="add50" value="Add $50 to your account">
+                <input type="submit" name="add100" value="Add $100 to your account"> -->
+                <br>
+                <input type="text" name="addCustom" placeholder="Enter amount">
+            </form>
+
+            <h4> You currently have ${{ funds }}</h4>
+
             {% else %}
             <p>Already registered? <a href="{{ url_for('login') }}">Login</a></p>
             {% endif %}

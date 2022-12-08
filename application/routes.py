@@ -1,5 +1,6 @@
 import sqlite3
 import random
+from datetime import date
 from application import app
 from flask import render_template, g, request, url_for, redirect, session, flash
 from application.forms import LoginForm, RegisterForm
@@ -7,16 +8,26 @@ from application import db
 
 
 @app.route("/")
-@app.route("/home")
+@app.route("/home", methods=['POST', 'GET'])
 def home():
-    conn = db
-    db.row_factory = sqlite3.Row
-    cur = db.cursor()
-    cur.execute("select * from users;")
+    funds=0
+    if session.get('user_id'):
+        funds = executeQuery("SELECT u_acctbal FROM users WHERE u_userid = ?", [session['user_id']])[0][0]
+    if request.method == 'POST':
+        sql = """UPDATE users
+        SET u_acctbal = round(u_acctbal + ?, 2)
+        WHERE u_userid = ?"""
+        
+        params = int(request.form['addCustom'])
+        
+        if params < 0:
+            flash("Please enter a positive number", "danger")
+            return redirect('/home')
+        res = executeQuery(sql, [params, session['user_id']])
+        return redirect('/home')
 
-    rows = cur.fetchall()
     
-    return render_template("home.html", rows=rows,home=True)
+    return render_template("home.html", funds=funds, home=True)
 
 @app.route("/logout")
 def logout():
@@ -33,7 +44,7 @@ def login():
         username = form.username.data
         password = form.password.data
         if checkUser(username, password):
-            if username == 'admin' and password == 'admin1234':
+            if username == 'admin' and password == 'admin':
                 session['username'] = 'admin'
                 return redirect('/admin')
             
@@ -118,10 +129,52 @@ def register():
 def stocks():
     
     if request.method == 'POST':
-        if request.form.get('watchlist-submission') == 'Add to Watchlist':
-            print('Submitted')
+        # print(request.form.items, request.form.get('buy-submission'))
+        if request.form.get('buy-submission') != "":
             ticker = request.form.get("ticker")
-            print(ticker)
+            quantity = request.form.get("buy-submission")
+            price = executeQuery("SELECT s_price FROM stocks WHERE s_ticker = ?", [ticker])[0][0]
+            total = price * int(quantity)
+            
+            if checkBalance(session['user_id']) < total:
+                flash(f"Unfortunately, you do not have at least ${total} in your balance.", "danger")
+                return redirect('/stocks')
+            else:
+                today = date.today()
+                today = today.strftime("%Y-%m-%d")
+                sql1 = """INSERT INTO orders (o_userid, o_ticker, o_quantity, o_tickerprice, o_orderdate)
+                VALUES
+                    (?, ?, ?, ?, ?);"""
+                params1 = [session['user_id'], ticker, quantity, price, today]
+
+                res = executeQuery(sql1, params1)
+
+                sql2 = """UPDATE users
+                SET u_acctbal = round(u_acctbal - ?, 2)
+                WHERE u_userid = ?;"""
+                params2 = [total, session['user_id']]
+
+                res = executeQuery(sql2, params2)
+
+                checkUserInPortfolio = executeQuery("SELECT count(p_userid) FROM portfolio WHERE p_userid = ?", [session['user_id']])[0][0]
+                checkTickerInPortfolio = executeQuery("SELECT count(p_ticker) FROM portfolio WHERE p_userid = ? AND p_ticker = ?", [session['user_id'], ticker])[0][0]
+                if checkUserInPortfolio == 0 or checkTickerInPortfolio == 0:
+                    res = executeQuery("""INSERT INTO portfolio
+                    VALUES
+                        (?,?,?);""", [session['user_id'], ticker, quantity])
+                else:
+                    sql3 = """UPDATE portfolio
+                    SET p_quantity = p_quantity + ?
+                    WHERE p_userid = ?"""
+                    params3 = [quantity, session['user_id']]
+                    res = executeQuery(sql3, params3)
+                
+                flash("Congrats", "success")
+            return redirect('/portfolio')
+        elif request.form.get('watchlist-submission') == 'Add to Watchlist':
+            # print('Submitted')
+            ticker = request.form.get("ticker")
+            # print(ticker)
             sql = """INSERT INTO watchlist
                 VALUES
                     (?, ?)"""
@@ -130,11 +183,15 @@ def stocks():
             return redirect('/watchlist')
         elif request.form.get('updateStocks') == 'Update Stocks':
             print('Stocks Updated!')
-            randomUpdate = random.uniform(-5.0, 5.0)
-            print(randomUpdate)
-            sql = """UPDATE stocks
-            SET s_price = round(s_price*(1+?);"""
-            res = executeQuery(sql, [randomUpdate/100])
+            for i in range(504):
+                randomUpdate = random.uniform(-10.0, 10.0)
+                res = executeQuery("""UPDATE stocks
+                SET s_price = round(s_price*(1+?),2),
+                s_cap = round(s_price * s_volume,2)
+                WHERE s_ticker in 
+                (SELECT s_ticker FROM stocks
+                ORDER BY RANDOM()
+                LIMIT 1);""", [randomUpdate/100])
             return redirect('/stocks')
         
     conn = db
@@ -149,16 +206,82 @@ def stocks():
 def crypto():
 
     if request.method == 'POST':
-        if request.form.get('crypto-watchlist-submission') == 'Add to Watchlist':
-            print('Submitted')
-            ticker = request.form.get("crypto-ticker")
-            print(ticker)
+        if request.form.get('buy-crypto') != "":
+                ticker = request.form.get("crypto-ticker")
+                quantity = request.form.get("buy-crypto")
+                price = executeQuery("SELECT c_price FROM crypto WHERE c_ticker = ?", [ticker])[0][0]
+                total = price * int(quantity)
+                
+                if checkBalance(session['user_id']) < total:
+                    flash(f"Unfortunately, you do not have at least ${total} in your balance.", "danger")
+                    return redirect('/crypto')
+                else:
+                    today = date.today()
+                    today = today.strftime("%Y-%m-%d")
+                    sql1 = """INSERT INTO orders (o_userid, o_ticker, o_quantity, o_tickerprice, o_orderdate)
+                    VALUES
+                        (?, ?, ?, ?, ?);"""
+                    params1 = [session['user_id'], ticker, quantity, price, today]
+
+                    res = executeQuery(sql1, params1)
+
+                    sql2 = """UPDATE users
+                    SET u_acctbal = u_acctbal - ?
+                    WHERE u_userid = ?;"""
+                    params2 = [total, session['user_id']]
+
+                    res = executeQuery(sql2, params2)
+
+                    checkUserInPortfolio = executeQuery("SELECT count(p_userid) FROM portfolio WHERE p_userid = ?", [session['user_id']])[0][0]
+                    checkTickerInPortfolio = executeQuery("SELECT count(p_ticker) FROM portfolio WHERE p_userid = ? AND p_ticker = ?", [session['user_id'], ticker])[0][0]
+                    if checkUserInPortfolio == 0 or checkTickerInPortfolio == 0:
+                        res = executeQuery("""INSERT INTO portfolio
+                        VALUES
+                            (?,?,?);""", [session['user_id'], ticker, quantity])
+                    else:
+                        sql3 = """UPDATE portfolio
+                        SET p_quantity = p_quantity + ?
+                        WHERE p_userid = ?"""
+                        params3 = [quantity, session['user_id']]
+                        res = executeQuery(sql3, params3)
+                    flash("Congrats", "success")
+                return redirect('/portfolio')
+        elif request.form.get('crypto-watchlist-submission') == 'Add to Watchlist':
+            # print('Submitted')
+            ticker = request.form.get("ticker")
+            # print(ticker)
             sql = """INSERT INTO watchlist
                 VALUES
                     (?, ?)"""
             params = [session['user_id'], ticker ]
             res = executeQuery(sql, params)
             return redirect('/watchlist')
+        elif request.form.get('updateCrypto') == 'Update Crypto':
+            print('Crypto Updated!')
+            for i in range(7):
+                randomUpdate = random.uniform(-30.0, 30.0)
+                res = executeQuery("""UPDATE crypto
+                SET c_price = round(c_price*(1+?),2)
+                WHERE c_ticker in 
+                (SELECT c_ticker FROM crypto
+                ORDER BY RANDOM()
+                LIMIT 1);""", [randomUpdate/100])
+            return redirect('/crypto')
+
+
+
+
+    # if request.method == 'POST':
+    #     if request.form.get('crypto-watchlist-submission') == 'Add to Watchlist':
+    #         print('Submitted')
+    #         ticker = request.form.get("crypto-ticker")
+    #         print(ticker)
+    #         sql = """INSERT INTO watchlist
+    #             VALUES
+    #                 (?, ?)"""
+    #         params = [session['user_id'], ticker]
+    #         res = executeQuery(sql, params)
+    #         return redirect('/watchlist')
     
     conn = db
     db.row_factory = sqlite3.Row
@@ -167,19 +290,44 @@ def crypto():
     crypto_rows = cur.fetchall()
     return render_template('crypto.html', crypto_rows=crypto_rows, crypto=True)
 
-@app.route("/portfolio")
+@app.route("/portfolio", methods=['POST', 'GET'])
 def portfolio():
     
     if session.get('username'):
+
+        if request.method == 'POST':
+            if request.form.get('sell-stock-submission') == "Sell":
+                print("bruh")
+                ticker = request.form.get("portfolio-stock-ticker")
+                sell_quantity = request.form.get("sell-stock-submission")
+                price = executeQuery("SELECT s_price FROM stocks WHERE s_ticker = ?", [ticker])[0][0]
+                total = price * int(quantity)
+                user_quantity = executeQuery("SELECT p_quantity FROM portfolio WHERE p_userid = ? AND p_ticker = ?", \
+                [session['user_id'], ticker])[0][0]
+                if user_quantity > sell_quantity:
+                    flash(f"You cannot sell more than what you own.")
+                return redirect('/portfolio')
+            pass
+
         conn = db
         db.row_factory = sqlite3.Row
         cur = db.cursor()
         cur.execute("""SELECT p_ticker, p_quantity FROM portfolio, users
-WHERE u_userid = p_userid
-AND u_userid = ?;""", [session['user_id']])
-        portfolio_rows = cur.fetchall()
-        return render_template("portfolio.html", portfolio_rows=portfolio_rows, portfolio=True)
-    return render_template("portfolio.html",portfolio=True)
+        WHERE u_userid = p_userid
+        AND p_ticker not in
+        (SELECT c_ticker FROM crypto)
+        AND u_userid = ?;""", [session['user_id']])
+        stock_portfolio_rows = cur.fetchall()
+
+        cur.execute("""SELECT DISTINCT p_ticker FROM portfolio, users, crypto
+        WHERE u_userid = p_userid
+        AND p_ticker in
+        (SELECT c_ticker FROM crypto)
+        AND u_userid = ?;""", [session['user_id']])
+        crypto_portfolio_rows = cur.fetchall()
+
+        return render_template("portfolio.html", stock_portfolio_rows=stock_portfolio_rows, crypto_portfolio_rows=crypto_portfolio_rows, portfolio=True)
+    return render_template("portfolio.html", portfolio=True)
 
 @app.route("/watchlist")
 def watchlist():
@@ -221,10 +369,18 @@ def transactions():
     transaction_rows = cur.fetchall()
     return render_template('transactions.html', transaction_rows=transaction_rows, transactions=True)
 
-@app.route('/users')
+@app.route('/users', methods=['POST', 'GET'])
 def users():
     if session.get('username') != 'admin':
         return redirect('/home')
+
+    if request.method == 'POST':
+        if request.form.get('deleteUser') == 'Remove User':
+            user = request.form.get('user')
+            sql = """DELETE FROM users
+            WHERE u_username = ?"""
+            res = executeQuery(sql, [user])
+            return redirect('/users')
     conn = db
     db.row_factory = sqlite3.Row
     cur = db.cursor()
@@ -278,6 +434,10 @@ def checkUser(username, password):
     # username and password must match
     res = executeQuery("SELECT count() from users where u_username = ? AND u_password = ?", [username, password])
     return res[0][0] == 1
+
+def checkBalance(user_id):
+    res = executeQuery("SELECT u_acctbal FROM users WHERE u_userid = ?", [user_id])
+    return res[0][0]
 
 @app.teardown_appcontext
 def close_connection(exception):
